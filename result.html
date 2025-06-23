@@ -1,0 +1,151 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+    <title>Results</title>
+    <style>
+        .result {
+            display: flex;
+            flex-wrap: wrap;
+            justify-content: center;
+            gap: 30px;
+            padding: 20px;
+        }
+
+        .card {
+            width: 320px;
+            perspective: 1200px;
+            flex-shrink: 0;
+        }
+
+        .card-inner {
+            position: relative;
+            width: 100%;
+            min-height: 280px;
+            transition: transform 0.6s;
+            transform-style: preserve-3d;
+        }
+
+        .card.flipped .card-inner {
+            transform: rotateY(180deg);
+        }
+
+        .card-front, .card-back {
+            position: absolute;
+            width: 100%;
+            backface-visibility: hidden;
+            background: white;
+            border-radius: 16px;
+            box-shadow: 0 6px 20px rgba(0, 0, 0, 0.1);
+            padding: 20px;
+            box-sizing: border-box;
+            min-height: 280px;
+        }
+
+        .card-front {
+            z-index: 2;
+        }
+
+        .card-back {
+            transform: rotateY(180deg);
+        }
+
+        .card p {
+            margin: 8px 0;
+            font-size: 1rem;
+            color: #374151;
+        }
+
+        .question {
+            font-weight: 700;
+            font-size: 1.05rem;
+            color: #1e293b;
+        }
+
+        .correct {
+            color: #22c55e;
+            font-weight: bold;
+        }
+
+        .incorrect {
+            color: #ef4444;
+            font-weight: bold;
+        }
+
+        .view-btn {
+            margin-top: 16px;
+            background-color: #2563eb;
+            color: white;
+            border: none;
+            border-radius: 8px;
+            padding: 10px 16px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: background 0.3s;
+        }
+
+        .view-btn:hover {
+            background-color: #1e40af;
+        }
+
+        @media (max-width: 768px) {
+            .result {
+                flex-direction: column;
+                align-items: center;
+            }
+
+            .card {
+                width: 90%;
+                max-width: 400px;
+            }
+        }
+    </style>
+</head>
+<body>
+    {% include 'header.html' %}
+
+    <main class="container main-content">
+        <h2>Your Score: {{ score }}/10</h2>
+
+        <div class="result">
+            {% for r in results %}
+                <div class="card">
+                    <div class="card-inner">
+                        <!-- FRONT SIDE -->
+                        <div class="card-front">
+                            <p class="question"><strong>Q{{ loop.index }}. {{ r.question }}</strong></p>
+                           
+                            <p>Your Answer: <span class="{{ 'correct' if r.is_correct else 'incorrect' }}">{{ r.selected }}</span></p>
+                            <p>Correct Answer: {{ r.correct }}</p>
+                            <button class="view-btn flip-btn">View Explanation</button>
+                        </div>
+
+                        <!-- BACK SIDE -->
+                        <div class="card-back">
+                             <p><strong>Chapter:</strong> {{ r.chapter }}</p>
+                            <p><strong>Explanation:</strong></p>
+                            <p>{{ r.explanation }}</p>
+                            <button class="view-btn flip-btn">Back</button>
+                        </div>
+                    </div>
+                </div>
+            {% endfor %}
+        </div>
+
+        <a href="/quiz" onclick="localStorage.removeItem('quizEndTime'); localStorage.removeItem('quizStarted');">
+            <button>Try Again</button>
+        </a>
+    </main>
+
+    {% include 'footer.html' %}
+
+    <script>
+        document.querySelectorAll('.flip-btn').forEach(button => {
+            button.addEventListener('click', function () {
+                const card = this.closest('.card');
+                card.classList.toggle('flipped');
+            });
+        });
+    </script>
+</body>
+</html> 

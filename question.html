@@ -1,0 +1,372 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+    <title>Question {{ qnum + 1 }} of {{ total }}</title>
+    <style>
+        
+        /* Layout */
+        body {
+            font-family: 'Poppins', sans-serif;
+            margin: 0;
+            padding: 0;
+            display: flex;
+            flex-direction: column;
+            min-height: 100vh;
+        }
+
+        /* Header */
+        header.site-header {
+            background-color: #2563eb;
+            color: white;
+            padding: 10px 20px;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+        }
+
+        .logo-circle {
+            background-color: white;
+            border-radius: 50%;
+            width: 50px;
+            height: 50px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            overflow: hidden;
+            box-shadow: 0 0 6px rgba(0,0,0,0.1);
+            flex-shrink: 0;
+        }
+
+        .logo-circle img {
+            max-width: 80%;
+            max-height: 80%;
+            display: block;
+        }
+
+        .logo-container {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            flex-shrink: 0;
+        }
+
+        .site-name {
+            font-size: 1.5em;
+            font-weight: 700;
+            color: white;
+            user-select: none;
+        }
+
+        header.site-header nav ul {
+            list-style: none;
+            margin: 0;
+            padding: 0;
+            display: flex;
+        }
+
+        header.site-header nav ul li {
+            margin-left: 20px;
+        }
+
+        header.site-header nav ul li a {
+            color: white;
+            text-decoration: none;
+            font-weight: 600;
+        }
+
+        header.site-header nav ul li a:hover {
+            text-decoration: underline;
+        }
+
+        /* Main Container */
+        .main-container {
+             justify-content: center;
+            flex-grow: 1;
+            display: flex;
+            padding: 30px 40px;
+            gap: 40px;
+            box-sizing: border-box;
+        }
+
+        .content {
+            flex-grow: 1;
+            max-width: 700px;
+            overflow-y: auto;
+        }
+
+        .question-text {
+            font-size: 1.3em;
+            margin-bottom: 20px;
+            font-weight: 600;
+        }
+
+        .options label {
+            display: block;
+            margin-bottom: 12px;
+            cursor: pointer;
+            font-size: 1.1em;
+        }
+
+        .nav-buttons {
+            margin-top: 30px;
+            display: flex;
+            gap: 12px;             /* space between buttons */
+            justify-content: flex-start; /* align left */
+        }
+
+        .nav-buttons button {
+            padding: 10px 24px;
+            font-size: 1em;
+            cursor: pointer;
+            border: none;
+            border-radius: 12px;    /* more curved edges */
+            background-color: #2563eb;
+            color: white;
+            font-weight: 600;
+            box-shadow: 0 4px 6px rgba(37, 99, 235, 0.3);
+            transition: background-color 0.3s ease, transform 0.15s ease;
+        }
+
+        .nav-buttons button:hover:not(:disabled) {
+            background-color: #1e40af;
+            transform: scale(1.05);
+        }
+
+        .nav-buttons button:disabled {
+            background-color: #ccc;
+            cursor: not-allowed;
+            transform: none;
+            box-shadow: none;
+        }
+
+        /* Sidebar */
+        .sidebar {
+            width: 280px;
+            background: #f5f5f5;
+            padding: 20px;
+            box-sizing: border-box;
+            border: 1px solid #ddd;
+            border-radius: 8px;
+            height: 420px;
+            display: flex;
+            flex-direction: column;
+        }
+
+        .sidebar h3 {
+            margin-top: 0;
+            margin-bottom: 15px;
+            font-weight: 600;
+            text-align: center;
+        }
+
+        .question-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(40px, 1fr));
+            grid-template-rows: repeat(2, 40px);
+            gap: 4px 2px; /* less vertical and horizontal spacing */
+            flex-grow: 1;
+            overflow-y: hidden; /* no scroll needed */
+        }
+
+        .question-grid a {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            background: #ddd;
+            color: #333;
+            text-decoration: none;
+            font-weight: 600;
+            height: 40px;
+            border-radius: 6px;
+            border: 2px solid transparent;
+            user-select: none;
+            transition: background-color 0.3s, border-color 0.3s;
+        }
+
+        .question-grid a.answered {
+            background-color: #4CAF50;
+            color: white;
+        }
+
+        .question-grid a.current {
+            border-color: #007BFF;
+            font-weight: 700;
+        }
+
+        .question-grid a:hover {
+            background-color: #bbb;
+        }
+
+        /* Timer */
+        #timer {
+            font-size: 1.2em;
+            font-weight: 700;
+            color: #007BFF;
+            text-align: right;
+            margin-bottom: 15px;
+            user-select: none;
+        }
+
+        /* Footer */
+        footer.site-footer {
+            background-color: #222;
+            color: white;
+            text-align: center;
+            padding: 15px 20px;
+            font-size: 0.9em;
+            margin-top: auto;
+        }
+    </style>
+    <!-- SweetAlert2 CDN -->
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+</head>
+<body>
+    <!-- Header -->
+    <header class="site-header">
+        <div class="logo-container">
+            <div class="logo-circle">
+                <img src="{{ url_for('static', filename='logo.png') }}" alt="12thClass.com Logo">
+            </div>
+            <div class="site-name">12thClass.com</div>
+        </div>
+
+        <nav>
+            <ul>
+                <li><a href="/">Home</a></li>
+                <li><a href="/quiz">Quiz</a></li>
+                <li><a href="/about">About</a></li>
+                <li><a href="/contact">Contact</a></li>
+            </ul>
+        </nav>
+    </header>
+
+    <!-- Main container with content and sidebar -->
+    <div class="main-container">
+        <div class="content">
+            <div id="timer">Loading timer...</div>
+
+            <h2>Question {{ qnum + 1 }} of {{ total }}</h2>
+            <form method="post" id="quizForm">
+                <p class="question-text">{{ question.question }}</p>
+
+                {% if question.image %}
+                    <div style="margin-bottom: 20px; text-align: center;">
+                        <img src="{{ url_for('static', filename=question.image) }}" alt="Question Diagram"
+                             style="max-width: 100%; max-height: 300px; border: 1px solid #ccc; padding: 10px; background: #fff;">
+                    </div>
+                {% endif %}
+
+                <div class="options">
+                    {% for opt in question.options %}
+                        <label>
+                            <input type="radio" name="answer" value="{{ opt }}" 
+                                   {% if answers.get(qnum|string) == opt %} checked {% endif %}>
+                            {{ opt }}
+                        </label>
+                    {% endfor %}
+                </div>
+
+                <div class="nav-buttons">
+                    {% if qnum > 0 %}
+                        <button type="submit" formaction="{{ url_for('question', qnum=qnum - 1) }}">Previous</button>
+                    {% endif %}
+                    {% if qnum < total - 1 %}
+                        <button type="submit">Next</button>
+                    {% else %}
+                        <button type="submit" id="submitBtn">Submit Quiz</button>
+                    {% endif %}
+                </div>
+            </form>
+        </div>
+
+        <!-- Sidebar on right with grid -->
+        <aside class="sidebar">
+            <h3>Questions</h3>
+            <div class="question-grid">
+                {% for i in range(total) %}
+                    {% set answered = answers.get(i|string) %}
+                    <a href="{{ url_for('question', qnum=i) }}"
+                       class="{% if answered %}answered{% endif %} {% if i == qnum %}current{% endif %}">
+                       {{ i + 1 }}
+                    </a>
+                {% endfor %}
+            </div>
+        </aside>
+   
+    </div>
+
+    <!-- Footer -->
+    <footer class="site-footer">
+        <p>&copy; 2025 12thClass.com | All Rights Reserved</p>
+    </footer>
+
+    <!-- Timer Script -->
+    <script>
+        const totalQuizTime = 600; // seconds
+        const storageKey = 'quizEndTime';
+        const startedKey = 'quizStarted';
+        const timerElement = document.getElementById('timer');
+        const form = document.getElementById('quizForm');
+
+        function initializeTimerOnce() {
+            if (!localStorage.getItem(startedKey)) {
+                const endTime = Date.now() + totalQuizTime * 1000;
+                localStorage.setItem(storageKey, endTime.toString());
+                localStorage.setItem(startedKey, 'true');
+            }
+        }
+
+        function updateTimer() {
+            const endTime = parseInt(localStorage.getItem(storageKey));
+            if (!endTime) return;
+
+            const now = Date.now();
+            let remaining = Math.floor((endTime - now) / 1000);
+            if (remaining < 0) remaining = 0;
+
+            const minutes = String(Math.floor(remaining / 60)).padStart(2, '0');
+            const seconds = String(remaining % 60).padStart(2, '0');
+            timerElement.textContent = `Time Left: ${minutes}:${seconds}`;
+
+            if (remaining === 0) {
+                localStorage.removeItem(storageKey);
+                localStorage.removeItem(startedKey);
+                window.location.href = "/result";  
+            }
+        }
+
+        initializeTimerOnce();
+        updateTimer();
+        const timerInterval = setInterval(updateTimer, 1000);
+
+        form.addEventListener('submit', (e) => {
+            const btn = document.activeElement;
+            if (btn && btn.id === 'submitBtn') {
+                e.preventDefault(); // prevent normal submit
+                
+                Swal.fire({
+                    title: '🎉 You\'ve completed your streak for today!',
+                    icon: 'success',
+                    confirmButtonText: 'View Result',
+                    allowOutsideClick: false,
+                    allowEscapeKey: false
+                }).then((result) => {
+                    if (result.isConfirmed) {
+                        // Remove quiz timer from localStorage
+                        localStorage.removeItem(storageKey);
+                        localStorage.removeItem(startedKey);
+
+                        // Now submit the form normally
+                        form.submit();
+                    }
+                });
+            } else {
+                if (btn && btn.id !== 'submitBtn') {
+                    
+                }
+            }
+        });
+    </script>
+</body>
+</html>

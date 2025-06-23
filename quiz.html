@@ -1,0 +1,67 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+    <title>Chemistry Quiz</title>
+    <!-- ✅ SweetAlert2 CDN -->
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+</head>
+<body>
+    {% include 'header.html' %}
+
+    <main class="container main-content">
+        <h2>Chemistry Quiz</h2>
+        <form method="post" action="/submit">
+            {% for q in questions %}
+                <div class="question-block">
+                    <p><strong>{{ q.question }}</strong></p>
+                    {% for opt in q.options %}
+                        <label>
+                            <input type="radio" name="{{ q.question }}" value="{{ opt }}">
+                            {{ opt }}
+                        </label><br>
+                    {% endfor %}
+                </div>
+            {% endfor %}
+            <input type="submit" class="btn-primary" value="Submit Quiz">
+        </form>
+    </main>
+
+    {% include 'footer.html' %}
+
+    <script>
+        // ✅ Set quizStarted flag
+        localStorage.setItem("quizStarted", "true");
+
+        // ✅ Function to block nav links during quiz
+        function blockIfQuizActive(event) {
+            if (localStorage.getItem("quizStarted") === "true") {
+                event.preventDefault();
+                Swal.fire({
+                    icon: 'warning',
+                    title: 'Submit the Quiz First!',
+                    text: 'Please submit the quiz before navigating away.',
+                    confirmButtonColor: '#2563eb'
+                });
+            }
+        }
+
+        // ✅ Attach event listeners to all navbar links
+        window.onload = function () {
+            const navLinks = document.querySelectorAll('nav a, .nav-links a, header a');
+
+            navLinks.forEach(link => {
+                // Skip if it's the current page
+                if (!link.href.includes("/quiz")) {
+                    link.addEventListener("click", blockIfQuizActive);
+                }
+            });
+
+            const quizForm = document.querySelector("form");
+            quizForm.addEventListener("submit", () => {
+                localStorage.removeItem("quizStarted");
+            });
+        };
+    </script>
+</body>
+</html>

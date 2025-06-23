@@ -1,0 +1,111 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Chemistry Daily Quiz</title>
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;600;700&display=swap" rel="stylesheet" />
+    <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+    
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+</head>
+
+<body>
+    {% include 'header.html' %}
+    <main class="container main-content">
+
+        <!-- Moving Banner -->
+        <div class="moving-banner">
+            <div class="banner-track">
+                <div class="track-content">
+                    <span>Welcome to Chemistry Daily Quiz — Practice Smart. Learn Faster. Score Better!</span>
+                    <span>Welcome to Chemistry Daily Quiz — Practice Smart. Learn Faster. Score Better!</span>
+                    <span>Welcome to Chemistry Daily Quiz — Practice Smart. Learn Faster. Score Better!</span>
+                    <span>Welcome to Chemistry Daily Quiz — Practice Smart. Learn Faster. Score Better!</span>
+                </div>
+            </div>
+        </div>
+
+        <div class="info-section">
+            <div class="info-text">
+                <h2>Why Daily Chemistry Quizzes?</h2>
+                <p>Practice regularly to master Class 12 Chemistry. Each quiz helps you reinforce concepts, improve speed, and track your growth. All chapters. All topics. Smartly crafted.</p>
+                <a href="#" onclick="confirmStartQuiz()">
+                    <button>Start Quiz</button>
+                </a>
+            </div>
+        </div>
+
+     
+        <div class="steps-section">
+            <div class="step">
+                <h3>🧪 Step 1: Take Daily Quiz</h3>
+                <p>10 carefully chosen questions from all chapters.</p>
+            </div>
+            <div class="step">
+                <h3>📈 Step 2: View Results</h3>
+                <p>See your score, correct answers, and explanations.</p>
+            </div>
+            <div class="step">
+                <h3>💡 Step 3: Learn & Improve</h3>
+                <p>Revise from chapters with lower scores. Build daily.</p>
+            </div>
+        </div>
+
+        
+        <div class="features-strip">
+            <span class="feature">🔀 Unlimited Practice</span>
+            <span class="feature">📚 Chapter Tags</span>
+            <span class="feature">📈 Score Tracker</span>
+            <span class="feature">🌟 CBSE 2025 Focused</span>
+            <span class="feature">🧠 Smart Explanations</span>
+        </div>
+
+       
+        <div class="quote-banner">
+            <span id="quote-text"></span>
+        </div>
+
+    </main>
+
+    {% include 'footer.html' %}
+
+    <
+    <script>
+        function confirmStartQuiz() {
+            Swal.fire({
+                title: '🧪 Start Quiz?',
+                text: "Are you ready to begin the daily quiz?",
+                icon: 'question',
+                showCancelButton: true,
+                confirmButtonColor: '#2563eb',
+                cancelButtonColor: '#d33',
+                confirmButtonText: 'Yes, Start!',
+                cancelButtonText: 'Not now'
+            }).then((result) => {
+                if (result.isConfirmed) {
+                    localStorage.removeItem('quizEndTime');
+                    localStorage.removeItem('quizStarted');
+                    window.location.href = "/quiz";
+                }
+            });
+        }
+    </script>
+
+  
+    <script>
+        const quotes = [
+            "“Success in Chemistry comes from consistent practice. Start today.”",
+            "“The more you practice, the luckier you get.” – Gary Player",
+            "“Learning is not attained by chance, it must be sought for with ardor.” – Abigail Adams",
+            "“Excellence is not a skill, it is an attitude.” – Ralph Marston",
+            "“You don’t have to be great to start, but you have to start to be great.” – Zig Ziglar",
+            "“Every expert was once a beginner. Keep practicing.”",
+            "“Practice puts brains in your muscles.” – Sam Snead"
+        ];
+        const quoteElement = document.getElementById("quote-text");
+        const randomIndex = Math.floor(Math.random() * quotes.length);
+        quoteElement.textContent = quotes[randomIndex];
+    </script>
+</body>
+</html>

@@ -1,0 +1,19 @@
+<header class="site-header">
+  <div class="container">
+    <div class="header-content" style="display: flex; align-items: center;">
+      <div class="logo-circle">
+        <img src="{{ url_for('static', filename='logo.png') }}" alt="Logo" class="logo-img">
+      </div>
+      <h1 class="site-name">12thClass.com</h1>
+    </div>
+    <nav>
+      <ul class="nav-links">
+        <li><a href="/">Home</a></li>
+        <li><a href="#" onclick="confirmStartQuiz(); return false;">Quiz</a></li>
+
+        <li><a href="/about">About</a></li>
+        <li><a href="/contact">Contact</a></li>
+      </ul>
+    </nav>
+  </div>
+</header>
